@@ -3,6 +3,7 @@
 #define __NBR_SUBARRAYS_H__ 
 
 #include <vector>
+#include <iostream>
 
 using namespace std;
 
