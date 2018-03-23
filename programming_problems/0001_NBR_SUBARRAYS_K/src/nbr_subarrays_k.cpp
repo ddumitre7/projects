@@ -12,7 +12,7 @@
 
 inline static long calculate_helper(int n);
 
-/* This implementation is optimal. It's execution time is O(n). */
+/* This implementation is optimal. Its execution time is O(n). */
 long nbr_subarrays_counter(const vector<int>& v, long K) {
 
 	long counter{0}, product{1};
