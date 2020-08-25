@@ -3,6 +3,7 @@
 
 #include <assert.h>
 
+#include <functional>
 #include <iostream>
 #include <list>
 #include <map>
@@ -17,10 +18,13 @@ struct TrieNode;
 
 class Trie {
  public:
+  // Constructors and destructor
   Trie() : root_{new TrieNode} {}
   Trie(const Trie &t) { root_ = t.root_->clone(); }
   Trie(Trie &&t) : root_{t.root_} { t.root_ = nullptr; }
+  ~Trie() { delete root_; }
 
+  // Operators
   Trie &operator=(const Trie &t) {
     if (this == &t) return *this;
 
@@ -37,11 +41,7 @@ class Trie {
   bool operator==(const Trie &t) { return root_->isEqual(t.root_); }
   bool operator!=(const Trie &t) { return *this == t; }
 
-  ~Trie() {
-    cout << "Delete trie:" << endl;
-    delete root_;
-  }
-
+  // Adding a string
   Trie &addString(const std::string &s) {
     auto cursor = root_;
 
@@ -58,19 +58,18 @@ class Trie {
     return *this;
   }
 
-  vector<string> allWords() {
-    vector<string> v;
+  void forEach(function<void(const string &)> f) {
     string s;
 
     assert(root_);
 
     for (auto e : root_->map_) {
       s.push_back(e.first);
-      allWordsRecursively(e.second, s, v);
+      allWordsRecursively_(e.second, s, f);
       s.pop_back();
     }
 
-    return v;
+    return;
   }
 
   vector<string> wordsByChar(char ch) {
@@ -84,9 +83,9 @@ class Trie {
     map<char, TrieNode *> map_;
     bool is_leaf_{false};
     ~TrieNode() {
-      if (is_leaf_) cout << endl;
+      // if (is_leaf_) cout << endl;
       for (auto e : map_) {
-        cout << e.first << " ";
+        // cout << e.first << " ";
         delete e.second;
       }
     }
@@ -126,14 +125,17 @@ class Trie {
 
   TrieNode *root_;
 
-  void allWordsRecursively(TrieNode *root, string &s, vector<string> &v) {
+  void allWordsRecursively_(TrieNode *root, string &s,
+                            function<void(const string &)> f) {
     if (!root) return;
 
-    if (root->is_leaf_) v.push_back(s);
+    if (root->is_leaf_) {
+      f(s);
+    }
 
     for (auto e : root->map_) {
       s.push_back(e.first);
-      allWordsRecursively(e.second, s, v);
+      allWordsRecursively_(e.second, s, f);
       s.pop_back();
     }
 

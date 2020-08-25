@@ -7,8 +7,6 @@
 using namespace std;
 using namespace triecont;
 
-void printer(const vector<string>&);
-
 int main() {
   cout << "But hello!\n";
 
@@ -30,47 +28,33 @@ int main() {
       .addString("mood")    // Add this word again
       .addString("moody");  // Add this word again
 
-  auto ret_vector = t1.allWords();
-
-  cout << "________________________________" << endl;
-
-  printer(t1.allWords());
-
   auto t2{t1};
+
+  auto print = [](const string& s) { cout << s << endl; };
+
   cout << "________________________________" << endl;
 
-  printer(t2.allWords());
+  t2.forEach(print);
 
-  cout << "==================================" << endl;
+  t1.addString("convenient");
 
-    t1.addString("convenient");
+  t2.addString("monster");
 
-  printer(t1.allWords());
+  std::cout << std::boolalpha;
 
-cout << "==================================" << endl;
+  cout << "(t1 == t2): " <<(t1 == t2) << endl;
 
-    t2.addString("monster");
+  cout << "GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG" << endl;
 
-  printer(t2.allWords());
+  t2.forEach(print);
 
+  cout << "HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH" << endl;
 
-  printer(t2.allWords());
+  int counter{};
 
+  t2.forEach([&counter](const string& s) { ++counter; });
 
-
-auto t3{t2};
-
-std::cout << std::boolalpha;
-
-cout << (t2 == t3) << endl;
-
-
+  cout << "Counter: " << counter << endl;
 
   return 0;
-}
-
-void printer(const vector<string>& vec) {
-  for (const auto& e : vec) {
-    cout << e << endl;
-  }
 }
