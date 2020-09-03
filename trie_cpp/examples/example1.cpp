@@ -1,3 +1,4 @@
+#include <algorithm>
 #include <iostream>
 #include <map>
 #include <string>
@@ -28,6 +29,32 @@ int main() {
       .addString("mood")    // Add this word again
       .addString("moody");  // Add this word again
 
+  cout << "ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ" << endl;
+
+  auto ii = t1.begin();
+
+  cout << *ii << endl;
+
+  cout << "UUUUUUUUUUUUUUUUUUUUUUUUUUU" << endl;
+
+  for (auto e = t1.begin(); e != t1.end(); ++e) {
+    cout << *e << endl;
+  }
+
+  cout << "TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT" << endl;
+
+  auto print101 = [](const string& s) { std::cout << s << endl; };
+
+  for_each(t1.begin(), t1.end(), print101);
+
+  cout << "MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM" << endl;
+
+
+  for(const auto&
+   r : t1) print101(r); 
+
+  cout << "WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW" << endl;
+
   auto t2{t1};
 
   auto print = [](const string& s) { cout << s << endl; };
@@ -42,7 +69,7 @@ int main() {
 
   std::cout << std::boolalpha;
 
-  cout << "(t1 == t2): " <<(t1 == t2) << endl;
+  cout << "(t1 == t2): " << (t1 == t2) << endl;
 
   cout << "GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG" << endl;
 
