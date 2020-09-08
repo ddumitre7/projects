@@ -39,13 +39,19 @@ bool dlinked_list_is_empty(dlinked_list_t list);
 //
 // Returns:  0 - Success
 //          !0 - Failed
-int dlinked_list_append(dlinked_list_t list, void *item);
+bool dlinked_list_append(dlinked_list_t list, void *item);
 
 // Insert an item into the list.  This will insert the item in front of the
 // Current item in the list.  Item must be non-null
 // Returns:  0 - Success
 //          !0 - Failed
-int dlinked_list_insert(dlinked_list_t list, void *item);
+bool dlinked_list_insert(dlinked_list_t list, void *item);
+
+// Insert an item into the list.  This will insert the item in front of the
+// Current item in the list.  Item must be non-null
+// Returns:  0 - Success
+//          !0 - Failed
+void dlinked_list_store(dlinked_list_t list, void *item);
 
 // Remove the current item from the list
 // Returns:
@@ -72,4 +78,4 @@ void *dlinked_list_get_prev(dlinked_list_t list);
 // Sort the linked list
 // fn is a function used to compare two list items
 // usr_info is a value passed to every call of fn
-bool dlinked_list_sort(dlinked_list_t list, compare_function_f fn, void *usr_info);
+bool dlinked_list_sort(dlinked_list_t list, compare_function_f fn);

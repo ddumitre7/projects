@@ -11,7 +11,7 @@ CFLAGS +=  $(INCLUDEDIRS) -Wall -std=c99 -pedantic -g
 example: $(OBJS)
 	$(CC) $(CFLAGS) $^ -o $@
 
-examplex.o: examplex.c ../src/dlinked_list.h
+example.o: example.c ../src/dlinked_list.h
 	$(CC) $(CFLAGS) -c $<
 
 dlinked_list.o: ../src/dlinked_list.c ../src/dlinked_list.h

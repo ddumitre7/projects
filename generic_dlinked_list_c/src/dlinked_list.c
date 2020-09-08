@@ -10,10 +10,11 @@ typedef struct node {
 } node_s;
 
 typedef struct dlinked_list {
-  node_s *head; /* Head of the list */
-  node_s *tail; /* Tail of the lits
-                 * Note: Head and Tail are the same when the size of the list
-                 * equals 1.
+  node_s *head; /* Th head of the list */
+  node_s *tail; /* The tail of the lits
+                 * Note: Head and tail are the same when the size of the list
+                 * equals 1. When the list is empty, then both head and tail
+                 * are NULL.
                  */
   node_s *iter; /* Use it to iterate through the list
                  * This field is initialized by calling dlinked_list_get_first
@@ -21,10 +22,10 @@ typedef struct dlinked_list {
                  */
 } dlinked_list_s;
 
-// Declaration of local functions
+/* Declaration of local functions */
 static node_s *make_node(void *val);
 
-// Implementation of the local functions
+/* Implementation of the local functions */
 static node_s *make_node(void *val) {
   node_s *n = malloc(sizeof(node_s));
 
@@ -39,48 +40,53 @@ static node_s *make_node(void *val) {
   return n;
 }
 
-// Function to create a linked list and return an opaque handle to it
 dlinked_list_t dlinked_list_create() {
-  dlinked_list_t ll = malloc(sizeof(dlinked_list_s));
+  dlinked_list_t list = malloc(sizeof(dlinked_list_s));
 
-  if (!ll) {
+  if (!list) {
     return NULL;
   }
 
-  ll->head = NULL;
-  ll->tail = NULL;
-  ll->iter = NULL;
+  list->head = NULL;
+  list->tail = NULL;
+  list->iter = NULL;
 
-  return ll;
+  return list;
 }
 
-// Function to destroy a linked list
-// If fn is not NULL then it will call fn for each item in the list
-void dlinked_list_destroy(dlinked_list_t list, destroy_function_f fn) {}
+void dlinked_list_destroy(dlinked_list_t list, destroy_function_f fn) {
+  while (list->head) {
+    node_s *next_head = list->head->next;
 
-// Function to check if a list is empty
-// returns  0  - False, there are items in the list
-//          !0 - True
+    if (fn) {
+      fn(list->head->elem);
+    }
+
+    free(list->head);
+
+    list->head = next_head;
+  }
+
+  free(list);
+}
+
 bool dlinked_list_is_empty(const dlinked_list_t list) {
-  // If the beginning of the list in NULL, then we know that the list
-  // is empty.
+  /* If the beginning of the list in NULL, then we know that the list
+   * is empty.
+   */
   return !list->head;
 }
 
-// Append an item to the list.  This will add the item to the end of the list
-// Item must be non-null
-//
-// Returns:  0 - Success
-//          !0 - Failed
-int dlinked_list_append(dlinked_list_t list, void *item) {
+bool dlinked_list_append(dlinked_list_t list, void *item) {
   assert(item);
 
   node_s *new_node = make_node(item);
   if (!new_node) {
-    return -1;
+    return false;
   }
 
-  if (!list->head) { /* This means we have an empty list */
+  if (!list->head) { 
+    /* This is the case when we have an empty list */
 
     list->head = list->tail = new_node;
   } else if (list->head == list->tail) {
@@ -95,27 +101,22 @@ int dlinked_list_append(dlinked_list_t list, void *item) {
     list->tail = new_node;
   }
 
-  return 0;
+  return true;
 }
 
-// Insert an item into the list.  This will insert the item in front of the
-// Current item in the list.  Item must be non-null
-// Returns:  0 - Success
-//          !0 - Failed
-int dlinked_list_insert(dlinked_list_t list, void *item) {
+bool dlinked_list_insert(dlinked_list_t list, void *item) {
   assert(item);
 
   node_s *new_node = make_node(item);
   if (!new_node) {
-    return -1;
+    return false;
   }
 
-  if (!list->head) { /* This means we have an empty list */
-
+  if (!list->head) { 
+    /* In this case we have an empty list */
     list->head = list->tail = new_node;
   } else if (list->head == list->tail) {
     /* This is a special case: the list has just one node */
-
     list->head = new_node;
     list->head->next = list->tail;
     list->tail->prev = new_node;
@@ -125,13 +126,15 @@ int dlinked_list_insert(dlinked_list_t list, void *item) {
     list->head = new_node;
   }
 
-  return 0;
+  return true;
 }
 
-// Remove the current item from the list
-// Returns:
-//          NULL - the list is empty
-//          item - The removed item
+void dlinked_list_store(dlinked_list_t list, void *item) {
+  assert(list->iter);
+
+  list->iter->elem = item;
+}
+
 void dlinked_list_remove(dlinked_list_t list) {
   assert(list->iter && list->head && list->tail);
 
@@ -154,18 +157,12 @@ void dlinked_list_remove(dlinked_list_t list) {
   return;
 }
 
-// Get the current item in the list
-// Returns:
-//          NULL - The list is empty
-//          item - The current item
 void *dlinked_list_current(dlinked_list_t list) {
   assert(list->iter);
 
   return list->iter->elem;
 }
 
-// Get the first/last item from the list and set as current
-//
 void *dlinked_list_get_first(dlinked_list_t list) {
   if (!list->head) {
     return NULL;
@@ -188,8 +185,6 @@ void *dlinked_list_get_last(dlinked_list_t list) {
   return list->iter->elem;
 }
 
-// Get the next / previous item from the list and set as
-// current
 void *dlinked_list_get_next(dlinked_list_t list) {
   assert(list->iter);
 
@@ -214,10 +209,40 @@ void *dlinked_list_get_prev(dlinked_list_t list) {
   return list->iter->elem;
 }
 
-// Sort the linked list
-// fn is a function used to compare two list items
-// usr_info is a value passed to every call of fn
-bool dlinked_list_sort(dlinked_list_t list, compare_function_f fn,
-                       void *usr_info) {
-  return -1;
+/* Internally this function uses an array of pointers to do the sorting. */
+bool dlinked_list_sort(dlinked_list_t list, compare_function_f fn) {
+  node_s *cursor = list->head;
+  int size = 0;
+
+  while (cursor) {
+    ++size;
+    cursor = cursor->next;
+  }
+
+  if (size == 0) return true; /* Nothing to sort */
+
+  void **array = malloc(size * sizeof(void *));
+  if (array == NULL) return false;
+
+  /* We copy the pointers from the list to the array */
+  void *item = dlinked_list_get_first(list);
+  int i = 0;
+  while (item) {
+    array[i++] = item;
+    item = dlinked_list_get_next(list);
+  }
+
+  qsort(array, size, sizeof(void *), fn);
+
+  /* We re-write the ponter values  the pointers from the list to the array */
+  item = dlinked_list_get_first(list);
+  i = 0;
+  while (item) {
+    dlinked_list_store(list, array[i++]);
+    item = dlinked_list_get_next(list);
+  }
+
+  free(array);
+
+  return true;
 }
