@@ -1,0 +1,28 @@
+<header>
+Predict the output of following C++ program:
+</header>
+<options>
+<item>
+0
+</item>
+<item correct="true">
+3
+</item>
+<item>
+10
+</item>
+<item>
+None of the above
+</item>
+</options>
+<explanation>
+While returning from a function, destructor is the last method to be executed. The
+destructor for the object <code>ob</code> is called after the value of <code>i</code> is
+copied to the return value of the function. So, before destructor could change the value
+of <code>i</code> to 10, the current value of <code>i</code> gets copied and hence the
+output is <code>i = 3</code>. 
+</explanation>
+<source>
+https://www.geeksforgeeks.org/c-plus-plus-gq/ destructors question 2
+</source>
+

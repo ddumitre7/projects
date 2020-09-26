@@ -1,0 +1,17 @@
+<header>
+Can destuctors be private in C++?
+</header>
+<options>
+<item correct="true">
+Yes
+</item>
+<item>
+No
+</item>
+</options>
+<explanation>
+Destructors can be private.
+</explanation>
+<source>
+https://www.geeksforgeeks.org/c-plus-plus-gq/ destructors question 1
+</source>

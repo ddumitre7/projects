@@ -1,0 +1,21 @@
+<header>
+What is the output of the following program?
+</header>
+<options>
+<item>
+Compilation error
+</item>
+<item>
+Constructor called
+Constructor called
+</item>
+<item correct="true">
+Constructor called
+</item>
+</options>
+<explanation>
+Only one object <code>t1</code> is constructed here. <code>t2</code> is just a pointer variable, not an object.
+</explanation>
+<source>
+https://www.geeksforgeeks.org/c-plus-plus-gq/ constructors question 4
+</source>

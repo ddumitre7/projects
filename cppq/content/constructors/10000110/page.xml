@@ -1,0 +1,42 @@
+<header>
+What is the output of the following program?
+</header>
+<options>
+<item>
+Normal Constructor called
+Normal Constructor called
+Normal Constructor called
+Copy Constructor called
+Copy Constructor called
+Normal Constructor called
+Copy Constructor called
+</item>
+<item>
+Normal Constructor called
+Copy Constructor called
+Copy Constructor called
+Normal Constructor called
+Copy Constructor called
+</item>
+<item correct="true">
+Normal Constructor called
+Copy Constructor called
+Copy Constructor called
+Normal Constructor called
+</item>
+</options>
+<explanation>
+See following comments for explanation:
+<code>
+Point *t1, *t2;   // No constructor call
+t1 = new Point(10, 15);  // Normal constructor call
+t2 = new Point(*t1);   // Copy constructor call 
+Point t3 = *t1;  // Copy constructor call
+Point t4;   // Normal constructor call
+t4 = t3;   // Assignment operator call
+</code>
+</explanation>
+<source>
+https://www.geeksforgeeks.org/c-plus-plus-gq/ constructors question 5
+</source>
+

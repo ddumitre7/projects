@@ -1,0 +1,34 @@
+<header>
+What is the output of the following program?
+</header>
+<options>
+
+
+B
+10 followed by Garbage Value
+10 10
+D
+
+
+<item>
+Compilation error
+</item>
+<item>
+10 followed by a garbage value
+</item>
+<item correct="true">
+10 10
+</item>
+<item correct="true">
+10 0
+</item>
+</options>
+<explanation>
+The following may look like an error, but it works fine.
+<code>X a = {10}; </code>Like structures, class objects can be initialized.
+The line <code>X b = a;</code> calls copy constructor and is same as <code>X b(a);</code>.
+Please note that, if we don't write our own copy constructor, then compiler creates a default copy constructor which assigns data members one object to other object.
+</explanation>
+<source>
+https://www.geeksforgeeks.org/c-plus-plus-gq/ constructors question 6
+</source>
