@@ -9,52 +9,54 @@ using namespace triecont;
 
 int main() {
   cout << "But hello!\n";
+  cout << "X X X X X X X X X X X X X X X X X X X X X X X X X X" << endl;
 
-  Trie t1;
+  Trie tx;
 
-  t1.addString("copy")
-      .addString("cosmic")
-      .addString("cosmos")
-      .addString("cosmopolitan")
-      .addString("copper")
-      .addString("condition");
+  tx.add("copy")
+      .add("cosmic")
+      .add("cosmos")
+      .add("cosmopolitan")
+      .add("copper")
+      .add("uxyz")
+      .add("conf")
+      .add("con")
+      .add("condition")
+      .add("contur");
 
-  t1.addString("mood")
-      .addString("moody")
-      .addString("moon")
-      .addString("moonbeam")
-      .addString("moonlight")
-      .addString("moose")
-      .addString("mood")    // Add this word again
-      .addString("moody");  // Add this word again
+tx.printTree();
 
-  auto t2{t1};
+  auto counter = 0;
+  // for (auto e = tx.begin(); e != tx.end(); ++e) {
+  //    cout << "%%%%%%%%%%%% " << *e << endl;
+  //    counter++;
+  // }
+  //  cout << "COUNTER:::::: " << counter << endl;
+  
+  counter = 0;
 
-  auto print = [](const string& s) { cout << s << endl; };
+  auto it = tx.find_prefix("con");
 
-  cout << "________________________________" << endl;
+  for (auto e = it; e != tx.end(); ++e) {
+     cout << "^^^^^^^^ " << *e << endl;
+     counter++;
+  }
+   cout << "COUNTER 2:::::: " << counter << endl;
 
-  t2.forEach(print);
 
-  t1.addString("convenient");
+  //auto e = tx.begin();
+  //cout << "%%%%%%%%%%%% "<< *e << endl;
+  //++e;
+  //cout << "%%%%%%%%%%%% "<< *e << endl;
+  // ++e;
+  // cout << *e << endl;
 
-  t2.addString("monster");
-
-  std::cout << std::boolalpha;
-
-  cout << "(t1 == t2): " <<(t1 == t2) << endl;
-
-  cout << "GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG" << endl;
-
-  t2.forEach(print);
-
-  cout << "HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH" << endl;
-
-  int counter{};
-
-  t2.forEach([&counter](const string& s) { ++counter; });
-
-  cout << "Counter: " << counter << endl;
+//   ++e;
+//  cout << *e << endl;
+  // ++e;
+  // cout << *e << endl;
+  // ++e;
+  // cout << *e << endl;
 
   return 0;
 }

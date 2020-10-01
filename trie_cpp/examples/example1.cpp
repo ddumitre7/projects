@@ -11,77 +11,66 @@ using namespace triecont;
 int main() {
   cout << "But hello!\n";
 
-  Trie t1;
+  Trie t;
 
-  t1.addString("copy")
-      .addString("cosmic")
-      .addString("cosmos")
-      .addString("cosmopolitan")
-      .addString("copper")
-      .addString("condition");
+  t.add("copy")
+      .add("cosmic")
+      .add("cosmos")
+      .add("cosmopolitan")
+      .add("copper")
+      .add("condition");
 
-  t1.addString("mood")
-      .addString("moody")
-      .addString("moon")
-      .addString("moonbeam")
-      .addString("moonlight")
-      .addString("moose")
-      .addString("mood")    // Add this word again
-      .addString("moody");  // Add this word again
+  t.add("mood")
+      .add("moody")
+      .add("moon")
+      .add("moonbeam")
+      .add("moonlight")
+      .add("moose")
+      .add("mood")    // Add this word again
+      .add("moody");  // Add this word again
 
-  cout << "ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ" << endl;
-
-  auto ii = t1.begin();
-
-  cout << *ii << endl;
-
-  cout << "UUUUUUUUUUUUUUUUUUUUUUUUUUU" << endl;
-
-  for (auto e = t1.begin(); e != t1.end(); ++e) {
-    cout << *e << endl;
+  cout << "Printing trie with iterators:" << endl;
+  for (auto e = t.begin(); e != t.end(); ++e) {
+    cout << *e << " ";
   }
 
-  cout << "TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT" << endl;
+  cout << endl << endl;
 
-  auto print101 = [](const string& s) { std::cout << s << endl; };
+  cout << "Printing trie with range:" << endl;
+  for (auto e : t) {
+    cout << e << " ";
+  }
 
-  for_each(t1.begin(), t1.end(), print101);
+  cout << endl << endl;
 
-  cout << "MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM" << endl;
+  cout << "Printing trie with \"for_each\":" << endl;
 
+  for_each(t.begin(), t.end(), [](const string& s) { std::cout << s << " "; });
 
-  for(const auto&
-   r : t1) print101(r); 
+  cout << endl << endl;
 
-  cout << "WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW" << endl;
+  cout << "Printing the words with prefix \"co\":" << endl;
 
-  auto t2{t1};
+  auto iterator = t.find_prefix("co");
+  for (; iterator != t.end(); ++iterator) {
+    cout << *iterator << " ";
+  }
 
-  auto print = [](const string& s) { cout << s << endl; };
+  cout << endl << endl;
 
-  cout << "________________________________" << endl;
+  cout << "Printing the words with prefix \"moon\":" << endl;
 
-  t2.forEach(print);
+  for_each(t.find_prefix("moon"), t.end(),
+           [](const string& s) { std::cout << s << " "; });
 
-  t1.addString("convenient");
+  cout << endl << endl;
 
-  t2.addString("monster");
+  cout << "Printing the words with prefix \"moonlight\":" << endl;
 
-  std::cout << std::boolalpha;
+  for_each(t.find_prefix("moonlight"), t.end(),
+           [](const string& s) { std::cout << s << " "; });
 
-  cout << "(t1 == t2): " << (t1 == t2) << endl;
-
-  cout << "GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG" << endl;
-
-  t2.forEach(print);
-
-  cout << "HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH" << endl;
-
-  int counter{};
-
-  t2.forEach([&counter](const string& s) { ++counter; });
-
-  cout << "Counter: " << counter << endl;
+  cout << endl << endl;
 
   return 0;
 }

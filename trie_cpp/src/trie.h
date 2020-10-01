@@ -33,19 +33,29 @@ class Trie {
   bool operator==(const Trie &);
   bool operator!=(const Trie &);
 
-  // Adding a string
-  Trie &addString(const std::string &);
-  // Iterating through the tree
-  void forEach(function<void(const string &)>);
-
   // Forward declaration
   class const_iterator;
 
   const_iterator begin() const { return const_iterator{this}; }
   const_iterator end() const { return const_iterator{}; }
 
+  // Add a string to the Trie tree
+  Trie &add(const std::string &);
+  // Find a subtree based on a prefix
+  const_iterator find_prefix(const std::string &);
+
   class const_iterator {
     list<pair<TrieNode *, map<char, TrieNode *>::const_iterator>> stack;
+    std::string prefix;
+
+    inline void next_leaf_node() {
+      auto ptr = stack.back().second->second;
+      while (ptr->m_is_leaf == false) {
+        assert(ptr->m_map.cbegin() != ptr->m_map.cend());
+        stack.push_back(make_pair(ptr, ptr->m_map.cbegin()));
+        ptr = ptr->m_map.cbegin()->second;
+      }
+    }
 
    public:
     const_iterator(const Trie *t) {
@@ -56,13 +66,19 @@ class Trie {
         return;
       }
 
-      auto it = t->m_root->m_map.cbegin();
-      while (it->second->is_leaf_ == false) {
-        auto it1 = it->second->m_map.cbegin();
-        assert(it->second->m_map.cbegin() != it->second->m_map.cend());
-        stack.push_back(make_pair(it->second->m_map.cbegin()->second, it1));
-        it = it1;
+      next_leaf_node();
+
+      return;
+    }
+
+    const_iterator(TrieNode *node, const std::string &str) : prefix{str} {
+      if (node->m_map.size() == 0) {
+        return;
       }
+
+      stack.push_back(make_pair(node, node->m_map.cbegin()));
+
+      next_leaf_node();
     }
 
     const_iterator() = default;
@@ -79,7 +95,46 @@ class Trie {
     // }
 
     const_iterator &operator++() {
-      stack.clear();
+
+      if (stack.empty() == true) {
+        return *this;
+      }
+
+      // We are always in a leaf at this point
+      auto ptr = stack.back().first;
+      if (ptr->m_map.size() == 0) {
+        stack.clear();
+        return *this;
+      }
+      auto ptr_leaf = stack.back().second->second;
+
+      // First we try to go down in the tree
+      if (ptr_leaf->m_map.size() != 0) {
+        stack.push_back(make_pair(ptr_leaf, ptr_leaf->m_map.cbegin()));
+        next_leaf_node();
+
+        return *this;
+      }
+
+      // If we are here then it means that we need to start to
+      // pop elements from the stack
+
+      while (stack.empty() == false) {
+        ++stack.back().second;
+        ptr = stack.back().first;
+        if (stack.back().second == ptr->m_map.cend()) {
+          stack.pop_back();
+          continue;
+        }
+
+        next_leaf_node();
+
+        return *this;
+      }
+
+      // return *this;
+
+      // We reach here when the stack is empty
       return *this;
     }
 
@@ -89,7 +144,7 @@ class Trie {
       for (const auto &e : stack) {
         s.push_back(e.second->first);
       }
-      return s;
+      return prefix + s;
     }
   };
 
@@ -97,7 +152,7 @@ class Trie {
   // TrieNode is the internal data structure of the trie tree
   struct TrieNode {
     map<char, TrieNode *> m_map;
-    bool is_leaf_{false};
+    bool m_is_leaf{false};
     ~TrieNode();
 
     TrieNode *clone();
@@ -108,6 +163,17 @@ class Trie {
 
   void allWordsRecursively_(TrieNode *, string &,
                             function<void(const string &)>);
+
+ public:
+  void printTree() {
+    string s;
+    cout << "PRINT BEGIN\n";
+
+    auto print101 = [](const string &s) { std::cout << s << endl; };
+    allWordsRecursively_(m_root, s, print101);
+    cout << "PRINT END\n";
+  }
+
 };  // namespace triecont
 
 // Class definitions
@@ -139,41 +205,26 @@ bool Trie::operator==(const Trie &t) { return m_root->isEqual(t.m_root); }
 
 bool Trie::operator!=(const Trie &t) { return *this == t; }
 
-Trie &Trie::addString(const std::string &s) {
+Trie &Trie::add(const std::string &s) {
   auto cursor = m_root;
 
-  for (auto c : s) {
-    if (!cursor->m_map[c]) {
+  for (const auto& c : s) {
+    if (cursor->m_map[c] == nullptr) {
       cursor->m_map[c] = new TrieNode;
     }
-
     cursor = cursor->m_map[c];
   }
 
-  cursor->is_leaf_ = true;
+  cursor->m_is_leaf = true;
 
   return *this;
-}
-
-void Trie::forEach(function<void(const string &)> f) {
-  string s;
-
-  assert(m_root);
-
-  for (auto e : m_root->m_map) {
-    s.push_back(e.first);
-    allWordsRecursively_(e.second, s, f);
-    s.pop_back();
-  }
-
-  return;
 }
 
 void Trie::allWordsRecursively_(TrieNode *root, string &s,
                                 function<void(const string &)> f) {
   if (!root) return;
 
-  if (root->is_leaf_) {
+  if (root->m_is_leaf) {
     f(s);
   }
 
@@ -189,7 +240,7 @@ void Trie::allWordsRecursively_(TrieNode *root, string &s,
 // TrieNode
 
 Trie::TrieNode::~TrieNode() {
-  // if (is_leaf_) cout << endl;
+  // if (m_is_leaf) cout << endl;
   for (auto e : m_map) {
     // cout << e.first << " ";
     delete e.second;
@@ -198,7 +249,7 @@ Trie::TrieNode::~TrieNode() {
 
 Trie::TrieNode *Trie::TrieNode::clone() {
   auto t = new TrieNode;
-  t->is_leaf_ = is_leaf_;
+  t->m_is_leaf = m_is_leaf;
 
   for (auto e : m_map) {
     t->m_map[e.first] = e.second->clone();
@@ -209,7 +260,7 @@ Trie::TrieNode *Trie::TrieNode::clone() {
 bool Trie::TrieNode::isEqual(const TrieNode *t) {
   if (!t) return false;
 
-  if (is_leaf_ != t->is_leaf_) return false;
+  if (m_is_leaf != t->m_is_leaf) return false;
 
   auto it1 = m_map.begin();
   auto it2 = t->m_map.begin();
@@ -227,6 +278,31 @@ bool Trie::TrieNode::isEqual(const TrieNode *t) {
   else
     return false;
 }
+
+Trie::const_iterator Trie::find_prefix(const std::string &prefix) {
+  auto cursor = m_root;
+
+  if (prefix.size() == 0) {
+    return Trie::const_iterator{};
+  }
+
+  for (const auto &e : prefix) {
+    auto iterator = cursor->m_map.find(e);
+
+    if (iterator == cursor->m_map.end()) {
+      return Trie::const_iterator{};
+    } else {
+      cursor = iterator->second;
+    }
+  }
+
+  return Trie::const_iterator{cursor, prefix};
+}
+
+// Find a subtree based on a prefix
+// const_iterator Trie::find(const std::string &prefix) {
+//   return const_iterator{};
+// }
 
 // DD:TODO
 // Return allocator
