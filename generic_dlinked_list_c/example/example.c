@@ -31,6 +31,9 @@ int main() {
     *ptrs[i] = *ptrsx[i] = 10 * i;
   }
 
+  /* This is a value to break the pattern */
+  *ptrs[0] = 500;
+
   dlinked_list_t dl_list = dlinked_list_create();
 
   if (!dl_list) {
@@ -49,7 +52,7 @@ int main() {
     }
   }
 
-  /* It will print: 0 10 20 30 40 50 60 70 80 90 */
+  /* It will print: 500 10 20 30 40 50 60 70 80 90 */
   print_list(dl_list);
 
   /* Inserting this set of pointers to the list. */
@@ -61,7 +64,7 @@ int main() {
   }
 
   /* It will print:
-   * 90 80 70 60 50 40 30 20 10 0 0 10 20 30 40 50 60 70 80 90
+   * 90 80 70 60 50 40 30 20 10 0 500 10 20 30 40 50 60 70 80 90
    */
   print_list(dl_list);
 
@@ -71,15 +74,15 @@ int main() {
           delete_value_from_list(dl_list, value) ? "true" : "false");
 
   /* It will print:
-   * 90 80 70 60 40 30 20 10 0 0 10 20 30 40 50 60 70 80 90
+   * 90 80 70 60 40 30 20 10 0 500 10 20 30 40 50 60 70 80 90
    */
   print_list(dl_list);
 
   fprintf(stdout, "Deleted <%d> from the list: %s.\n", value,
           delete_value_from_list(dl_list, value) ? "true" : "false");
 
-  /* It will print: 
-   * 90 80 70 60 40 30 20 10 0 0 10 20 30 40 60 70 80 90 
+  /* It will print:
+   * 90 80 70 60 40 30 20 10 0 500 10 20 30 40 60 70 80 90
    */
   print_list(dl_list);
 
@@ -106,8 +109,10 @@ int main() {
     dlinked_list_remove(dl_list);
   }
 
+  fprintf(stdout,
+          "Removing the elements from the head and then from the tail.\n");
   /* It will print:
-   * 80 70 60 40 30 20 10 0 0 10 20 30 40 60 70 80 
+   * 80 70 60 40 30 20 10 0 500 10 20 30 40 60 70 80
    */
   print_list(dl_list);
 
@@ -115,7 +120,7 @@ int main() {
           dlinked_list_sort(dl_list, compare_ints) ? "true" : "false");
 
   /* It will print the list sorted:
-   * 0 0 10 10 20 20 30 30 40 40 60 60 70 70 80 80
+   * 0 10 10 20 20 30 30 40 40 60 60 70 70 80 80 500
    */
   print_list(dl_list);
 
@@ -167,8 +172,8 @@ static bool delete_value_from_list(dlinked_list_t list, int value) {
 }
 
 int compare_ints(const void *a, const void *b) {
-  int arg1 = *(const int *)a;
-  int arg2 = *(const int *)b;
+  int arg1 = *(int *)a;
+  int arg2 = *(int *)b;
 
   if (arg1 < arg2) return -1;
   if (arg1 > arg2) return 1;

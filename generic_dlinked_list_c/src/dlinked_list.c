@@ -85,7 +85,7 @@ bool dlinked_list_append(dlinked_list_t list, void *item) {
     return false;
   }
 
-  if (!list->head) { 
+  if (!list->head) {
     /* This is the case when we have an empty list */
 
     list->head = list->tail = new_node;
@@ -112,7 +112,7 @@ bool dlinked_list_insert(dlinked_list_t list, void *item) {
     return false;
   }
 
-  if (!list->head) { 
+  if (!list->head) {
     /* In this case we have an empty list */
     list->head = list->tail = new_node;
   } else if (list->head == list->tail) {
@@ -214,6 +214,7 @@ bool dlinked_list_sort(dlinked_list_t list, compare_function_f fn) {
   node_s *cursor = list->head;
   int size = 0;
 
+  /* How long is the list */
   while (cursor) {
     ++size;
     cursor = cursor->next;
@@ -232,9 +233,16 @@ bool dlinked_list_sort(dlinked_list_t list, compare_function_f fn) {
     item = dlinked_list_get_next(list);
   }
 
-  qsort(array, size, sizeof(void *), fn);
+  /* This is a nested function */
+  int compare_ptr2ptr(const void **a, const void **b) { return fn(*a, *b); }
 
-  /* We re-write the ponter values  the pointers from the list to the array */
+  /* Our array is an array of pointers to pointers and fn compairs pointers
+   * to values. So we use "compare_ptr2ptr" as an adapter.
+   */
+  qsort(array, size, sizeof(void **),
+        (int (*)(const void *, const void *))compare_ptr2ptr);
+
+  /* We re-write the pointer values  the pointers from the list to the array */
   item = dlinked_list_get_first(list);
   i = 0;
   while (item) {
