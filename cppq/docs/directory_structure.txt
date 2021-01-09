@@ -24,6 +24,8 @@ static keyword
 friend keyword
 const keyword
 new and delete
+Concurrency
+Idioms
 Templates
 Template specialization
 Template instantiation
