@@ -22,10 +22,11 @@ class BodyCell:
 
 
 class Snake:
-    """The snake."""
+    """The snake abstraction"""
 
     def __init__(self):
-        """Initialize name and age attributes."""
+        """Initialize the 
+        snake"""
         self.MAX_X = 100
         self.MAX_Y = 80
         self.INIT_LEN = 6
