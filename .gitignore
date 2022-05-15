@@ -1,0 +1,3 @@
+
+# Exclude Python compilation files
+snake/src/__pycache__/*
